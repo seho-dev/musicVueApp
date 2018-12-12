@@ -36,8 +36,11 @@ export default {
     },
     mounted(){
         setTimeout(()=>{
+            //计算宽
             this._setSliderWidth()
+            //计算点
             this._initDots()
+            //初始化轮播图
             this._initSlider()
              //自动播放
              if(this.autoPlay){
@@ -73,7 +76,7 @@ export default {
                 //父级窗口随着递增
                 width+=sliderWidth;
             }
-            //如果是loop循环，为了切换效果，需要2倍宽度
+                //如果是loop循环，为了切换效果，需要2倍宽度
                 if(this.loop && !resize){
                     width += 2*sliderWidth;
                 }
@@ -81,7 +84,6 @@ export default {
         },
         //初始化dots
         _initDots(){
-              console.log(this.children.length);
               this.dot=new Array(this.children.length);
         },
         //初始化轮播图
@@ -122,10 +124,16 @@ export default {
             if(this.loop){
                 pageIndex += 1
             }
+
             this.timer = setTimeout(()=>{
                 this.slider.goToPage(pageIndex , 0 ,400)
             },this.interval)
-        }
+        },
+        
+    },
+    destroyed(){
+        //销毁的时候把计时器清除掉
+        clearTimeout(this.timer);
     }
 }
 </script>
