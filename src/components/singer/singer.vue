@@ -1,11 +1,12 @@
 <template>
-  <div class="singer">
+  <div class="singer" >
       <listview :data="singerList" @detail="listenDetail"></listview>
       <router-view></router-view>
   </div>
 </template>
 
 <script>
+import scroll from 'base/scroll/scroll'
 import {getsingerList} from 'api/singer'
 import {ERR_OK} from 'api/config'
 import Singer from 'common/js/singer'
@@ -21,7 +22,8 @@ export default {
         }
       },
       components:{
-          listview
+          listview,
+          scroll
       },
       created(){
           getsingerList().then((value)=>{

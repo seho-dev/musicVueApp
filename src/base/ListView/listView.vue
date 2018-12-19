@@ -1,6 +1,6 @@
 <template>
     <div>
-        <scroll :data="data" class="listview" ref="listview">
+        <scroll :data="data" class="listview">
             <div>
                 <ul>
                     <li v-for="(group,number) in data" :key="number" class="list-group" ref="listGroup">
@@ -23,7 +23,6 @@
         </scroll>
     </div>
 </template>
-
 <script>
 import scroll from 'base/scroll/scroll'
 import {getData} from 'common/js/dom'

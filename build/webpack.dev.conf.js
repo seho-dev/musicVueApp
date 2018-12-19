@@ -44,7 +44,21 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         console.log(e);
       })
     }),
-
+    apiRoutes.get('/api/getSearchItem',(req,res)=>{
+      const url = 'https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp';
+      axios.get(url, {
+        headers: {
+          referer: 'https://c.y.qq.com/',
+          host: 'c.y.qq.com'
+        },
+        params: req.query  //这是请求的query 
+      }).then((response) => {
+      //response是api地址返回的，数据在data里。
+        res.json(response.data)
+      }).catch((e) => {
+        console.log(e);
+      })
+    }), 
     apiRoutes.get('/api/lyric',(req,res)=>{
       const url = 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg';
       axios.get(url,{
@@ -65,22 +79,6 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         res.json(ret)
       }).catch((e)=>{
         console.log(e)
-      })
-    }),
-
-    //获取推荐页面中的歌单数据
-    apiRoutes.get('/api/getDecList',(req,res)=>{
-      const url = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg';
-      axios.get(url,{
-        headers:{
-          referer: 'https://c.y.qq.com/',
-          host: 'c.y.qq.com'
-        },
-        params:req.query
-      }).then((res) =>{
-          res.json(response.data)
-      }).catch((e)=>{
-          console.log(e)
       })
     })
    },

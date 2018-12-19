@@ -1,5 +1,6 @@
 
 import { model } from 'common/js/config.js'
+import {getHistory} from 'common/js/cache'
 
 const state = {
     singer: {},
@@ -13,7 +14,8 @@ const state = {
     mode: model.sequence,
     currenIndex: -1,
     disc:{},
-    topList :{}
+    topList :{},
+    searchHistory: getHistory()
 }
 
 export default state
