@@ -5,7 +5,14 @@
 import * as type from "./mutations-type";
 import { shuffle } from "common/js/util";
 import { model } from "common/js/config";
-import {saveHistory ,deleteHistoryByItem ,removeHistory} from 'common/js/cache'
+import {
+  saveHistory,
+  deleteHistoryByItem,
+  removeHistory,
+  addplaylist,
+  addfavouite,
+  removefavouite
+} from "common/js/cache";
 
 //寻找索引下标
 function getArrIndex(arr, song) {
@@ -105,18 +112,66 @@ export const insertSong = function({ commit, state }, song) {
 };
 
 //关于搜索结果历史存储的action
-export const saveSearchHistory = function({commit},query){
-
-  commit(type.SET_SEARCH_HISTORY,saveHistory(query))
-}
-
+export const saveSearchHistory = function({ commit }, query) {
+  commit(type.SET_SEARCH_HISTORY, saveHistory(query));
+};
 
 //删除一个历史记录
-export const deleteHistory = function ({commit},query){
-  commit(type.SET_SEARCH_HISTORY,deleteHistoryByItem(query))
-}
+export const deleteHistory = function({ commit }, query) {
+  commit(type.SET_SEARCH_HISTORY, deleteHistoryByItem(query));
+};
 
 //删除全部历史记录
-export const removeHis = function ({commit}){
-  commit(type.SET_SEARCH_HISTORY,removeHistory())
+export const removeHis = function({ commit }) {
+  commit(type.SET_SEARCH_HISTORY, removeHistory());
+};
+
+//删除一首歌
+export const deleteSong = function({ commit, state }, song) {
+  //先获取几个必要的内容的副本
+  let playlist = state.playList.slice();
+  let sequenceList = state.sequenceList.slice();
+  let currenIndex = state.currenIndex;
+
+  let pIndex = getArrIndex(playlist, song);
+  playlist.splice(pIndex, 1);
+  let sIndex = getArrIndex(sequenceList, song);
+  sequenceList.splice(sIndex, 1);
+
+  //判断，当前播放索引大于删除的歌曲的索引或者删除末尾歌曲，要把index--
+  if (currenIndex > pIndex || currenIndex === playlist.length) {
+    currenIndex--;
+  }
+  commit(type.SET_PLAYLIST, playlist);
+  commit(type.SET_SEQUENCE_LIST, sequenceList);
+  commit(type.SET_CURREN_INDEX, currenIndex);
+
+  //如果播放列表没有歌曲
+  let status = playlist.length > 0;
+  commit(type.SET_PLAYING, status);
+};
+
+//删除播放列表
+export const cleanSongList = function({ commit, status }) {
+  commit(type.SET_PLAYLIST, []);
+  commit(type.SET_SEQUENCE_LIST, []);
+  commit(type.SET_CURREN_INDEX, -1);
+};
+
+//新增播放历史
+export const addPlayList = function({commit,status},song){
+  commit(type.SET_PLAY_HISTORY, addplaylist(song));
 }
+
+//增加我喜欢的列表
+export const addfavouriteList = function ({commit,status},song){
+  commit(type.SET_FAVOURITE_LIST,addfavouite(song))
+}
+
+//删除我喜欢的列表
+export const removefavouriteList = function({commit,status},song){
+  commit(type.SET_FAVOURITE_LIST,removefavouite(song))
+}
+
+
+

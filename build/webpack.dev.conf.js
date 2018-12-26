@@ -30,18 +30,17 @@ const devWebpackConfig = merge(baseWebpackConfig, {
   //在这里添加一个before方法
   before(apiRoutes){
     apiRoutes.get('/api/getDiscList',(req,res)=>{
-      const url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg';
+      const url = 'https://u.y.qq.com/cgi-bin/musicu.fcg';
       axios.get(url, {
         headers: {
-          referer: 'https://c.y.qq.com/',
-          host: 'c.y.qq.com'
+          referer: 'https://y.qq.com/?ADTAG=myqq&nomobile=1',
+          host: 'y.qq.com'
         },
         params: req.query  //这是请求的query 
       }).then((response) => {
       //response是api地址返回的，数据在data里。
-        res.json(response.data)
+        res.json(response)
       }).catch((e) => {
-        console.log(e);
       })
     }),
     apiRoutes.get('/api/getSearchItem',(req,res)=>{

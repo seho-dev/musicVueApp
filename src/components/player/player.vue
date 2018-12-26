@@ -45,6 +45,7 @@
                   class="text"
                   :class="{'current': currentLineNum ===index}"
                   v-for="(line,index) in currentLyric.lines"
+                  :key="index"
                 >{{line.txt}}</p>
               </div>
             </div>
@@ -76,8 +77,8 @@
             <div class="icon i-right" @click="next">
               <i class="icon-next"></i>
             </div>
-            <div class="icon i-right">
-              <i class="icon icon-not-favorite"></i>
+            <div class="icon i-right" @click="toogleLove(currenSong)">
+              <i class="icon" :class="clickLove(currenSong)"></i>
             </div>
           </div>
         </div>
@@ -97,13 +98,14 @@
             <i :class="changeMiniIconPlaying" @click.stop="targetPlay" class="icon-mini"></i>
           </prograss-circle>
         </div>
-        <div class="control">
+        <div class="control" @click.stop="showPlayList">
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
+    <playlist ref="playlist"></playlist>
     <audio
-      src="./static/mp3/test.mp3"
+      :src="getMusicData(currenSong.mid)"
       ref="audio"
       @play="ready"
       @error="error"
@@ -114,7 +116,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from "vuex";
+import { mapGetters, mapMutations, mapActions } from "vuex";
 //导入第三方
 import animations from "create-keyframe-animation";
 import Lyric from "lyric-parser";
@@ -124,19 +126,23 @@ import { prefixStyle } from "common/js/dom";
 import progress from "base/prograss-bar/prograss";
 import prograssCircle from "base/prograss-circle/prograss-circle";
 import scroll from "base/scroll/scroll";
+import playlist from "components/playlist/playlist";
 //导入播放模式配置
 import { model } from "common/js/config";
 import { shuffle } from "common/js/util";
+import { changeMode } from "common/js/mixin";
 
 const transform = prefixStyle("transform");
 const transformDuration = prefixStyle("transformDuration");
 
 export default {
   name: "player",
+  mixins: [changeMode],
   components: {
     ProgressBar: progress,
     prograssCircle,
-    scroll
+    scroll,
+    playlist
   },
   data() {
     return {
@@ -157,6 +163,15 @@ export default {
     };
   },
   methods: {
+    ...mapActions(["addPlayList"]),
+    ...mapMutations({
+      setfullScreen: "SET_FULLSCREEN"
+    }),
+    //获取歌曲url
+    getMusicData(mid){
+      let url = `https://api.mlwei.com/music/api/?key=523077333&type=url&id=${mid}&size=hq`
+      return url
+    },
     //关闭播放器全屏状态
     closePlayer() {
       this.setfullScreen(false);
@@ -164,13 +179,6 @@ export default {
     openPlayer() {
       this.setfullScreen(true);
     },
-    ...mapMutations({
-      setfullScreen: "SET_FULLSCREEN",
-      setPlayingStatas: "SET_PLAYING",
-      setcurrenIndex: "SET_CURREN_INDEX",
-      setMode: "SET_MODE",
-      setPlayList: "SET_PLAYLIST"
-    }),
     //动画的执行
     enter(el, done) {
       //利用数据解构从_getPosAndScale方法解构数据
@@ -319,6 +327,8 @@ export default {
     //关于播放器的方法
     ready() {
       this.songReady = true;
+      //准备成功，把当前歌曲添加到缓存中
+      this.addPlayList(this.currenSong);
     },
     error() {
       this.songReady = true;
@@ -344,26 +354,6 @@ export default {
         len++;
       }
       return num;
-    },
-    //点击改变播放模式
-    changeMode() {
-      //从vuex取mode模式，进行改变,(重点)
-      let newMode = (this.mode + 1) % 3;
-      //设置新的模式
-      this.setMode(newMode);
-      //更改顺序，如果当前是随机播放，就洗牌
-      let list = null;
-      if (this.mode === this.model.random) {
-        //打乱顺序
-        list = shuffle(this.sequenceList);
-      } else {
-        //不打乱
-        list = this.sequenceList;
-      }
-      //当我们改变随机模式的时候，因为当前歌曲是根据列表和索引来计算的，我们需要重新设置一下索引，避免切换随机的时候换歌
-      this.resetCurrenIndex(list);
-      //vuex传入新的list
-      this.setPlayList(list);
     },
     //处理歌词
     getlyric() {
@@ -468,13 +458,7 @@ export default {
       this.$refs.lyricList.$el.style[transformDuration] = `${time}ms`;
       this.$refs.cddom.style.opacity = opacity;
     },
-    resetCurrenIndex(list) {
-      //通过es6的函数，我们要找到当前歌曲所在的索引
-      let index = list.findIndex(item => {
-        return this.currenSong.id === item.id;
-      });
-      this.setcurrenIndex(index);
-    },
+
     //拖拉按钮监听事件
     onProgressBarChange(item) {
       //通过百分比可以设置歌曲的百分比
@@ -488,32 +472,22 @@ export default {
       if (this.currentLyric) {
         this.currentLyric.seek(percent * 1000);
       }
-    }
+    },
+    //显示播放列表
+    showPlayList() {
+      this.$refs.playlist.show();
+    },
+    //添加当前播放的歌曲到我喜欢的列表
+    addFavouriteList() {}
   },
   computed: {
-    ...mapGetters([
-      "fullScreen",
-      "playList",
-      "currenSong",
-      "playing",
-      "currenIndex",
-      "mode",
-      "sequenceList"
-    ]),
+    ...mapGetters(["fullScreen", "currenIndex", "playing"]),
     //更改暂停和播放的图标
     changeIconPlaying() {
       return this.playing ? "icon-pause" : "icon-play";
     },
     changeMiniIconPlaying() {
       return this.playing ? "icon-pause-mini" : "icon-play-mini";
-    },
-    //改变播放状态的类名图标
-    changeIconMode() {
-      return this.mode === model.sequence
-        ? "icon-sequence"
-        : this.mode === model.loop
-        ? "icon-loop"
-        : "icon-random";
     },
     cdClas() {
       return this.playing ? "play" : "play pause";

@@ -6,7 +6,7 @@
     <h1 class="title" v-html="title"></h1>
     <div class="bg-image" :style="backgrounsImg" ref="bgImg">
       <div class="play-wrapper">
-        <div ref="playBtn" v-show="this.songs.length>0" class="play" @click="random">
+        <div ref="playBtn" v-show="this.songs.length>0 && randomDom" class="play" @click="random">
           <i class="icon-play"></i>
           <span class="text">随机播放全部</span>
         </div>
@@ -45,7 +45,8 @@ export default {
   mixins:[playListMixin],
   data() {
     return {
-      scorllY: 0
+      scorllY: 0,
+      randomDom:true
     };
   },
   props: {
@@ -126,6 +127,11 @@ export default {
       //哪个值大就附给translateY;可以出现的效果就是layer层最多覆盖图片层原来的位置，如果继续滑动，minTransLateY是永远比滑动的像素大
       //就可以实现我们的滑动的下限分配
       let translateY = Math.max(this.minTransLateY, item);
+      if(translateY<-287){
+        this.randomDom = false
+      }else{
+        this.randomDom = true
+      }
       this.$refs.layer.style[transform] = `translate3d(0,${translateY +
         40}px,0)`;
       //避免滑动到顶部，列表文字盖住图片，所以要动态设置图片的层级关系

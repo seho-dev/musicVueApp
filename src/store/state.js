@@ -1,6 +1,6 @@
 
 import { model } from 'common/js/config.js'
-import {getHistory} from 'common/js/cache'
+import {getHistory,queryfavouite,searchplaylist} from 'common/js/cache'
 
 const state = {
     singer: {},
@@ -15,7 +15,9 @@ const state = {
     currenIndex: -1,
     disc:{},
     topList :{},
-    searchHistory: getHistory()
+    searchHistory: getHistory(),
+    playHistory :searchplaylist(),
+    favouriteList :queryfavouite()
 }
 
 export default state

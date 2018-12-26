@@ -15,8 +15,7 @@
                 </div>
             </li>
         </ul>
-        <!-- 加载页面
-        <div class="loading" v-show="!this.songs.songs">
+        <!-- <div class="loading" v-show="!this.songs.songs">
             <loading></loading>
         </div> -->
     </div>

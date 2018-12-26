@@ -1,13 +1,59 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import rank from 'components/rank/rank'
-import recommend from 'components/recommend/recommend'
-import search from 'components/search/search'
-import singer from 'components/singer/singer'
-import singerDetail from 'components/singerDetail/singerDetail'
-import disc from 'components/disc/disc'
-import topList from 'components/topList/topList'
 Vue.use(Router)
+
+
+/**
+ * 路由异步加载
+ */
+
+ const recommend = ((resolve)=>{
+   import('components/recommend/recommend').then((mod)=>{
+     resolve(mod)
+   })
+ })
+
+ const search = ((resolve)=>{
+  import('components/search/search').then((mod)=>{
+    resolve(mod)
+  })
+})
+
+const rank = ((resolve)=>{
+  import('components/rank/rank').then((mod)=>{
+    resolve(mod)
+  })
+})
+
+const singer = ((resolve)=>{
+  import('components/singer/singer').then((mod)=>{
+    resolve(mod)
+  })
+})
+
+const singerDetail = ((resolve)=>{
+  import('components/singerDetail/singerDetail').then((mod)=>{
+    resolve(mod)
+  })
+})
+
+const disc = ((resolve)=>{
+  import('components/disc/disc').then((mod)=>{
+    resolve(mod)
+  })
+})
+
+const topList = ((resolve)=>{
+  import('components/topList/topList').then((mod)=>{
+    resolve(mod)
+  })
+})
+
+const usercenter = ((resolve)=>{
+  import('components/user-center/user-center').then((mod)=>{
+    resolve(mod)
+  })
+})
 
 export default new Router({
   routes: [
@@ -49,6 +95,10 @@ export default new Router({
             component:singerDetail
           }
         ]
+      },
+      {
+        path:'/user',
+        component:usercenter
       }
   ]
 })

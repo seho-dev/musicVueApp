@@ -60,7 +60,7 @@ export default {
     Confirm
   },
   computed: {
-    ...mapGetters(["searchHistory"]),
+    ...mapGetters(["searchHistory","currenSong"]),
     shortcut() {
       return this.result.concat(this.searchHistory);
     }
@@ -99,6 +99,8 @@ export default {
     //设置搜索历史
     setHistory() {
       this.saveSearchHistory(this.query);
+      //把当前歌曲添加到播放
+      this.insertSong(this.currenSong)
     },
     //调用box方法，失去焦点
     boxBlur() {
@@ -119,7 +121,7 @@ export default {
       });
     },
     //vuex
-    ...mapActions(["saveSearchHistory", "deleteHistory", "removeHis"])
+    ...mapActions(["saveSearchHistory", "deleteHistory", "removeHis","insertSong"])
   },
   //监听query的变化，如果从有到无，说明是从suggest切换回来的，在这个时候刷新scorll
   watch: {

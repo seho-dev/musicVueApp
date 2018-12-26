@@ -21,11 +21,11 @@
               @click="handelGoDesc(item)"
             >
               <div class="icon">
-                <img width="60" height="60" v-lazy="item.imgurl">
+                <img width="60" height="60" v-lazy="item.cover">
               </div>
               <div class="text">
-                <h2 class="name" v-html="item.creator.name"></h2>
-                <p class="desc" v-html="item.dissname"></p>
+                <h2 class="name" v-html="item.title"></h2>
+                <p class="desc" v-html="item.username"></p>
               </div>
             </li>
           </ul>
@@ -35,7 +35,6 @@
           <loading></loading>
         </div>
         <!-- 弹框 -->
-        
       </div>
     </scroll>
     <router-view></router-view>
@@ -50,7 +49,7 @@ import scroll from "base/scroll/scroll";
 import loading from "base/loading/loading";
 import { playListMixin } from "common/js/mixin";
 import { mapMutations } from "vuex";
-import { MessageBox } from 'mint-ui';
+import { MessageBox } from "mint-ui";
 
 export default {
   name: "recommend",
@@ -59,7 +58,7 @@ export default {
     return {
       recommends: [],
       discList: [],
-      popupVisible:false
+      popupVisible: false
     };
   },
   components: {
@@ -68,6 +67,8 @@ export default {
     loading
   },
   created() {
+    //提示
+    this.getTitle();
     //加载执行方法
     this._getData();
     //加载歌单
@@ -77,6 +78,12 @@ export default {
     ...mapMutations({
       setdisc: "SET_DISC"
     }),
+    getTitle(){
+      MessageBox({
+        title: "bug说明",
+        message: "此网页只是作为测试，交流，面试使用，所有的数据来源于QQ音乐，歌曲协议均是解析接口可以全部收费歌曲免费收听，ps:歌手页面无法滑动，播放列表窗口无法选择歌曲，均为bug等待更新解决"
+      });
+    },
     //mixin定义的方法设置scorll的底部
     handelPlayList(playlist) {
       const bottom = playlist.length >= 1 ? "60px" : "";
@@ -90,8 +97,8 @@ export default {
       //     path:`/recommend/${item.dissid}`
       // })
       MessageBox({
-        title:'错误提示',
-        message:'没有获取到官方的歌单链接'
+        title: "错误提示",
+        message: "没有获取到官方的歌单链接"
       });
       this.setdisc(item);
     },
@@ -104,9 +111,11 @@ export default {
     },
     _getDiscList() {
       getDiscList().then(val => {
-        if (val.code === ERR_OK) {
-          this.discList = val.data.list;
-        }
+        setTimeout(()=>{
+          this.discList = val.v_hot;
+          this.$refs.scroll.refresh()
+        },20)
+        
       });
     },
     listenImg() {
